@@ -43,122 +43,122 @@ public class StartDash : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         
-        //カウントダウンが終了したら
-        if (StartFlg.isStart == true)
-        {
-            //スタートダッシュカウント
-            if (fNowDashCount >= fStartDashCount)
-            {
-                PlayerSpeed.VerticalSpeed = fStartDashSpeed;
+        ////カウントダウンが終了したら
+        //if (StartFlg.isStart == true)
+        //{
+        //    //スタートダッシュカウント
+        //    if (fNowDashCount >= fStartDashCount)
+        //    {
+        //        PlayerSpeed.VerticalSpeed = fStartDashSpeed;
 
-                GameObject.Find("BoosterEffects").GetComponent<BoosterEffect>().StartEffect();
+        //        GameObject.Find("BoosterEffects").GetComponent<BoosterEffect>().StartEffect();
 
-                //成功判定
-                bStartDashFlg = true;
-            }
-            else
-            {
-                PlayerSpeed.VerticalSpeed = 0.0f;
-            }
-
-
-
-            //スクリプトを切る
-            enabled = false;
-
-            //パーティクル消す
-            SmokeParticle.Stop();
+        //        //成功判定
+        //        bStartDashFlg = true;
+        //    }
+        //    else
+        //    {
+        //        PlayerSpeed.VerticalSpeed = 0.0f;
+        //    }
 
 
-            return;
-        }
+
+        //    //スクリプトを切る
+        //    enabled = false;
+
+        //    //パーティクル消す
+        //    SmokeParticle.Stop();
 
 
-        ////////////////////////////////////
-        //スタートダッシュ準備
-        ////////////////////////////////////
-
-        //スティック入力取得
-        float fLeftInput = MultiInput.Instance.GetLeftStickAxis().y;     //左上下
-        float fRightInput = MultiInput.Instance.GetRightStickAxis().y;   //右上下
+        //    return;
+        //}
 
 
-        //カウント減算
-        fNowDashCount -= fDecDashCount * Time.deltaTime;
-        if (fNowDashCount <= 0.0f)
-        {
-            if (StartParticle == true)
-            {
-                StartParticle = false;
-                SmokeParticle.Stop();
-            }
-            fNowDashCount = 0.0f;
-        }
+        //////////////////////////////////////
+        ////スタートダッシュ準備
+        //////////////////////////////////////
+
+        ////スティック入力取得
+        //float fLeftInput = MultiInput.Instance.GetLeftStickAxis().y;     //左上下
+        //float fRightInput = MultiInput.Instance.GetRightStickAxis().y;   //右上下
 
 
-        //初回時のみ前入力設定処理
-        if (bFirst == true)
-        {
-            fOldLeftValue = -Mathf.Sign(fLeftInput);
-            fOldRightValue = -Mathf.Sign(fRightInput);
-        }
+        ////カウント減算
+        //fNowDashCount -= fDecDashCount * Time.deltaTime;
+        //if (fNowDashCount <= 0.0f)
+        //{
+        //    if (StartParticle == true)
+        //    {
+        //        StartParticle = false;
+        //        SmokeParticle.Stop();
+        //    }
+        //    fNowDashCount = 0.0f;
+        //}
 
-        //１回目判定
-        if (bInput == false &&                                    //一回目判定
-            Mathf.Abs(fLeftInput) >= fStickValue &&               //一定入力値以上
-            Mathf.Abs(fRightInput) >= fStickValue &&              //一定入力値以上
-            Mathf.Sign(fLeftInput) != Mathf.Sign(fRightInput) &&  //上下入力判定
-            fOldLeftValue != Mathf.Sign(fLeftInput) &&            //前回の入力と逆入力
-            fOldRightValue != Mathf.Sign(fRightInput))            //前回の入力と逆入力
-        {
-            bFirst = false;                             //初回判定OFF
-            bInput = true;                              //一回目入力判定ON
-            fOldLeftValue = Mathf.Sign(fLeftInput);     //入力保存
-            fOldRightValue = Mathf.Sign(fRightInput);   //入力保存
-            fStartFrame = Time.time;                    //入力開始時間保存
-            return;
-        }
 
-        //2回目
-        if (bInput == true &&
-            Mathf.Abs(fLeftInput) >= fStickValue &&    //一定入力値以上
-            Mathf.Abs(fRightInput) >= fStickValue &&   //一定入力値以上
-            fOldLeftValue != Mathf.Sign(fLeftInput) && //前回の入力と逆入力
-            fOldRightValue != Mathf.Sign(fRightInput)) //前回の入力と逆入力
-        {
-            //入力成功
-            bInput = false;                                     //入力判定OFF
-            fNowDashCount += fAddDashCount; //* Time.deltaTime; //カウント加算
-            if (fNowDashCount > fStartDashCount + fAddDashCount)
-                fNowDashCount = fStartDashCount + fAddDashCount;
+        ////初回時のみ前入力設定処理
+        //if (bFirst == true)
+        //{
+        //    fOldLeftValue = -Mathf.Sign(fLeftInput);
+        //    fOldRightValue = -Mathf.Sign(fRightInput);
+        //}
 
-            fOldLeftValue = Mathf.Sign(fLeftInput);             //入力保存
-            fOldRightValue = Mathf.Sign(fRightInput);           //入力保存
-            if (StartParticle == false)
-            {
-                StartParticle = true;
-                SmokeParticle.Play();
-            }
-        }
-        else
-        {
-            //入力受付時間が過ぎていないか
-            if ((Time.time - fStartFrame) >= fNextFrameCount)
-            {//入力失敗
-                bInput = false;
-            }
-        }
+        ////１回目判定
+        //if (bInput == false &&                                    //一回目判定
+        //    Mathf.Abs(fLeftInput) >= fStickValue &&               //一定入力値以上
+        //    Mathf.Abs(fRightInput) >= fStickValue &&              //一定入力値以上
+        //    Mathf.Sign(fLeftInput) != Mathf.Sign(fRightInput) &&  //上下入力判定
+        //    fOldLeftValue != Mathf.Sign(fLeftInput) &&            //前回の入力と逆入力
+        //    fOldRightValue != Mathf.Sign(fRightInput))            //前回の入力と逆入力
+        //{
+        //    bFirst = false;                             //初回判定OFF
+        //    bInput = true;                              //一回目入力判定ON
+        //    fOldLeftValue = Mathf.Sign(fLeftInput);     //入力保存
+        //    fOldRightValue = Mathf.Sign(fRightInput);   //入力保存
+        //    fStartFrame = Time.time;                    //入力開始時間保存
+        //    return;
+        //}
 
-        ////////////////////////////////////
-        // 速度を送る
-        ////////////////////////////////////
-        PlayerSpeed.VerticalSpeed = fNowDashCount * (PlayerSpeed.PlayerMaxSpeed / fStartDashCount);
-        //Debug.Log(fNowDashCount);
+        ////2回目
+        //if (bInput == true &&
+        //    Mathf.Abs(fLeftInput) >= fStickValue &&    //一定入力値以上
+        //    Mathf.Abs(fRightInput) >= fStickValue &&   //一定入力値以上
+        //    fOldLeftValue != Mathf.Sign(fLeftInput) && //前回の入力と逆入力
+        //    fOldRightValue != Mathf.Sign(fRightInput)) //前回の入力と逆入力
+        //{
+        //    //入力成功
+        //    bInput = false;                                     //入力判定OFF
+        //    fNowDashCount += fAddDashCount; //* Time.deltaTime; //カウント加算
+        //    if (fNowDashCount > fStartDashCount + fAddDashCount)
+        //        fNowDashCount = fStartDashCount + fAddDashCount;
 
-        ////////////////////////////////////
-        // 塊を回転させる
-        ////////////////////////////////////
-        //Debug.Log(fNowDashCount * 100 * Time.deltaTime);
-        Katamari.Rotate(new Vector3(fNowDashCount * 100 * Time.deltaTime, 0, 0));
+        //    fOldLeftValue = Mathf.Sign(fLeftInput);             //入力保存
+        //    fOldRightValue = Mathf.Sign(fRightInput);           //入力保存
+        //    if (StartParticle == false)
+        //    {
+        //        StartParticle = true;
+        //        SmokeParticle.Play();
+        //    }
+        //}
+        //else
+        //{
+        //    //入力受付時間が過ぎていないか
+        //    if ((Time.time - fStartFrame) >= fNextFrameCount)
+        //    {//入力失敗
+        //        bInput = false;
+        //    }
+        //}
+
+        //////////////////////////////////////
+        //// 速度を送る
+        //////////////////////////////////////
+        //PlayerSpeed.VerticalSpeed = fNowDashCount * (PlayerSpeed.PlayerMaxSpeed / fStartDashCount);
+        ////Debug.Log(fNowDashCount);
+
+        //////////////////////////////////////
+        //// 塊を回転させる
+        //////////////////////////////////////
+        ////Debug.Log(fNowDashCount * 100 * Time.deltaTime);
+        //Katamari.Rotate(new Vector3(fNowDashCount * 100 * Time.deltaTime, 0, 0));
 	}
 }

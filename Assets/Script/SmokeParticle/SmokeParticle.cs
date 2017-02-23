@@ -22,10 +22,10 @@ public class SmokeParticle : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	    //速度判定
-        if (Mathf.Abs(m_PlayerMove.SideSpeed) >= m_fStartSpeed || Mathf.Abs(m_PlayerMove.VerticalSpeed) >= m_fStartSpeed)
-            SetStartFlg(true);
-        else
-            SetStartFlg(false);
+        //if (Mathf.Abs(m_PlayerMove.SideSpeed) >= m_fStartSpeed || Mathf.Abs(m_PlayerMove.VerticalSpeed) >= m_fStartSpeed)
+        //    SetStartFlg(true);
+        //else
+        //    SetStartFlg(false);
 	}
 
     void SetStartFlg(bool bFlg)

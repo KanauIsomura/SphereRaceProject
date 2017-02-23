@@ -33,8 +33,8 @@ public class PlayerRotate : MonoBehaviour {
         float fRightHorizontal = MultiInput.Instance.GetRightStickAxis().x;
 	    
         //回転
-        if (m_PlayerMove.VerticalSpeed != 0 || m_PlayerMove.SideSpeed != 0)
-            transform.Rotate(transform.up, fRightHorizontal * fAddAngle * Time.deltaTime);
+        //if (m_PlayerMove.VerticalSpeed != 0 || m_PlayerMove.SideSpeed != 0)
+        //    transform.Rotate(transform.up, fRightHorizontal * fAddAngle * Time.deltaTime);
     }
 
 }

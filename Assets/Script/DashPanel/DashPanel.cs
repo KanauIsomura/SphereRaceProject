@@ -24,9 +24,6 @@ public class DashPanel : MonoBehaviour {
         if (col.gameObject.tag == "Player")
         {
             PlayerMove PlayerSpeed = col.GetComponent<PlayerMove>();
-            if (PlayerSpeed.VerticalSpeed < 0)
-                PlayerSpeed.VerticalSpeed = 0;
-            PlayerSpeed.DashSpeed = fDashSpeed;
             GameObject.Find("BoosterEffects").GetComponent<BoosterEffect>().StartEffect();
         }
     }
