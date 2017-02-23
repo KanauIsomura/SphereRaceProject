@@ -78,7 +78,7 @@ public class PlayerBound : MonoBehaviour {
         //Debug.Log("ResistanceValue" + ResistanceValue);
 
         //バウンドさせる
-        PlayerDirection.BoundSet(vFrom, BoundPower, Mathf.Abs(ResistanceValue.z), Mathf.Abs(ResistanceValue.x));
+        //PlayerDirection.BoundSet(vFrom, BoundPower, Mathf.Abs(ResistanceValue.z), Mathf.Abs(ResistanceValue.x));
     }
 
 
@@ -107,6 +107,6 @@ public class PlayerBound : MonoBehaviour {
         ResistanceValue = PlayerDirection.PlayerDirection + collision.gameObject.transform.forward;
        
         //バウンドさせる
-        PlayerDirection.BoundSet(vFrom, BoundPower, ResistanceValue.x, ResistanceValue.z);
+       // PlayerDirection.BoundSet(vFrom, BoundPower, ResistanceValue.x, ResistanceValue.z);
     }
 }
