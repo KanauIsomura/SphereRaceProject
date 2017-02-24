@@ -208,9 +208,6 @@ public class MultiInput : SingletonMonoBehaviour<MultiInput> {
     /// </summary>
     private void ReadingKeyBoardData() {
         FileInfo keyDataFile = new FileInfo("Data/" + KeyBoardDataFileName + ".bin");
-        if(keyDataFile == null) {
-            return;
-        }
         StreamReader streamReader = new StreamReader(keyDataFile.OpenRead());
         // キーの割り当て
         ButtonClossUp = streamReader.ReadLine();
@@ -295,7 +292,7 @@ public class MultiInput : SingletonMonoBehaviour<MultiInput> {
     [ContextMenu("KeyDataのアタッチメント")]
     private void AttachKeyBoard() {
         UpdateKeyData();
-        AttachKeyBoard();
+        OutputKeyBoardData();
     }
 
     // 以下コメントなし。
