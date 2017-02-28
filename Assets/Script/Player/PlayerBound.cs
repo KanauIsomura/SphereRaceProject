@@ -72,13 +72,9 @@ public class PlayerBound : MonoBehaviour {
         //抵抗値計算
         Vector3 ResistanceValue;
         ResistanceValue = PlayerDirection.PlayerDirection + hit.normal.normalized;
-        //PlayerDirection.PlayerDirection;
-        //Debug.Log("hit" + hit.normal);
-        //Debug.Log("Player" + PlayerDirection.PlayerDirection);
-        //Debug.Log("ResistanceValue" + ResistanceValue);
 
         //バウンドさせる
-        //PlayerDirection.BoundSet(vFrom, BoundPower, Mathf.Abs(ResistanceValue.z), Mathf.Abs(ResistanceValue.x));
+        PlayerDirection.BoundSet(vFrom, BoundPower, Mathf.Abs(ResistanceValue.magnitude));
     }
 
 
@@ -107,6 +103,6 @@ public class PlayerBound : MonoBehaviour {
         ResistanceValue = PlayerDirection.PlayerDirection + collision.gameObject.transform.forward;
        
         //バウンドさせる
-       // PlayerDirection.BoundSet(vFrom, BoundPower, ResistanceValue.x, ResistanceValue.z);
+        PlayerDirection.BoundSet(vFrom, BoundPower, ResistanceValue.magnitude);
     }
 }

@@ -32,7 +32,7 @@ public class PlayerMove : MonoBehaviour
     public float SlopeLimit { get { return m_fSlopLimit; } }
     public float BoundSpeed { get { return m_fBoundSpeed; } }
     public float PlayerMaxSpeed { get { return m_fMaxSpeed; } }
-    public Vector3 PlayerDirection { get { return transform.forward; } }
+    public Vector3 PlayerDirection { get { return m_vMoveDirection; } }
 
     //判定用変数
     private CharacterController CharaCon;
@@ -73,55 +73,21 @@ public class PlayerMove : MonoBehaviour
 
         //---- アクセル ----//
         if (MultiInput.Instance.GetPressButton(MultiInput.CONTROLLER_BUTTON.CANCEL))
-        {
-            //加速
-            m_fNowSpeed += m_fAccelSpeed * Time.deltaTime;
-
-            //最大速度制限
-            if (m_fNowSpeed > m_fMaxSpeed)
-                m_fNowSpeed -= m_fBrakeSpeed * Time.deltaTime;
-        }
+            Accel();
 
         //---- ブレーキ ----//
         if (MultiInput.Instance.GetPressButton(MultiInput.CONTROLLER_BUTTON.SQUARE))
-        {
-            //減速
-            m_fNowSpeed -= m_fBrakeSpeed * Time.deltaTime;
+            Brake();
 
-            //最大速度制限
-            if (m_fNowSpeed < -m_fMaxSpeed)
-                m_fNowSpeed += m_fAccelSpeed * Time.deltaTime;
-        }
 
         //----   減速   ----//
-        //符号保存
-        float Sign = Mathf.Sign(m_fNowSpeed);
-        //減速
-        m_fNowSpeed = Mathf.Abs(m_fNowSpeed) - m_fFriction * Time.deltaTime;
-
-        //0以下にならないように制限
-        if (m_fNowSpeed < 0)
-            m_fNowSpeed = 0;
-
-        //符号を戻す
-        m_fNowSpeed *= Sign;
-
-
+        m_fNowSpeed = Deceleration(m_fNowSpeed, m_fFriction);     //現在速度
+        m_fBoundSpeed = Deceleration(m_fBoundSpeed, m_fFriction);
 
         //----  曲がる  ----//
-        //入力値取得
-        Vector2 StickInput = MultiInput.Instance.GetLeftStickAxis();    
-
         //速度がある時のみ処理を行う
         if (m_fNowSpeed != 0)
-        {
-            Sign = 1;
-            if (m_fNowSpeed < 0.0f)
-                Sign = -1;
-
-            m_vMoveDirection = Quaternion.AngleAxis(Sign * StickInput.x * m_fCurveAngle * Time.deltaTime, transform.up) * m_vMoveDirection;
-            //transform.Rotate(transform.up, Sign * StickInput.x * m_fCurveAngle * Time.deltaTime);
-        }
+            Curve();
 
         
         //----  右移動  ----//
@@ -142,6 +108,7 @@ public class PlayerMove : MonoBehaviour
 
         //移動量計算
         vMove = m_vMoveDirection * m_fNowSpeed;
+        CharaCon.Move(m_vBoundVec * m_fBoundSpeed * Time.deltaTime);
         CharaCon.Move(vMove * Time.deltaTime);
 
 
@@ -166,8 +133,7 @@ public class PlayerMove : MonoBehaviour
     /// </summary>
     /// <param name="Vec"></param>
     /// <param name="Speed"></param>
-    /*
-    public void BoundSet(Vector3 Vec, float Speed, float fSideResistanceValue, float fVerticalResistanceValue)
+    public void BoundSet(Vector3 Vec, float Speed, float fResistanceValue)
     {
         //変数設定
         m_fBoundSpeed = Mathf.Abs(Speed);
@@ -178,14 +144,75 @@ public class PlayerMove : MonoBehaviour
         //Debug.Log("Vertical前" + m_fVerticalSpeed);
 
         //抵抗値で速度減少
-        m_fSideSpeed = m_fSideSpeed * fSideResistanceValue;
-        m_fVerticalSpeed = m_fVerticalSpeed * fVerticalResistanceValue;
-        WeightMove.Attenuation(fVerticalResistanceValue);
+        m_fNowSpeed = m_fNowSpeed * fResistanceValue;
 
         //Debug.Log("Side" + m_fSideSpeed);
         //Debug.Log("Vertical" + m_fVerticalSpeed);
         //Debug.Log("WeightSpeed" + WeightMove.WeightSpeed);
-
     }
-    */
+
+
+    /// <summary>
+    /// アクセル処理
+    /// </summary>
+    void Accel()
+    {
+        //加速
+        m_fNowSpeed += m_fAccelSpeed * Time.deltaTime;
+        
+        //最大速度制限
+        if (m_fNowSpeed > m_fMaxSpeed)
+            m_fNowSpeed -= m_fBrakeSpeed * Time.deltaTime;
+    }
+
+
+    /// <summary>
+    /// ブレーキ処理
+    /// </summary>
+    void Brake()
+    {
+        //減速
+        m_fNowSpeed -= m_fBrakeSpeed * Time.deltaTime;
+
+        //最大速度制限
+        if (m_fNowSpeed < -m_fMaxSpeed)
+            m_fNowSpeed += m_fAccelSpeed * Time.deltaTime;
+    }
+
+
+    /// <summary>
+    /// 減速
+    /// </summary>
+    float Deceleration(float Speed, float DecelerationValue)
+    {
+        //符号保存
+        float Sign = Mathf.Sign(Speed);
+        //減速
+        Speed = Mathf.Abs(Speed) - DecelerationValue * Time.deltaTime;
+
+        //0以下にならないように制限
+        if (Speed < 0)
+            Speed = 0;
+
+        //符号を戻す
+        Speed *= Sign;
+
+        return Speed;
+    }
+
+    /// <summary>
+    /// カーブ処理
+    /// </summary>
+    void Curve()
+    {
+        //入力値取得
+        Vector2 StickInput = MultiInput.Instance.GetLeftStickAxis();
+
+        float Sign = 1;
+        if (m_fNowSpeed < 0.0f)
+           Sign = -1;
+
+        m_vMoveDirection = Quaternion.AngleAxis(Sign * StickInput.x * m_fCurveAngle * Time.deltaTime, transform.up) * m_vMoveDirection;
+        //transform.Rotate(transform.up, Sign * StickInput.x * m_fCurveAngle * Time.deltaTime);    
+    }
 }
