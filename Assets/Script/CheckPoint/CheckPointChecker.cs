@@ -12,10 +12,12 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEditor;
 public class CheckPointChecker : MonoBehaviour {
     public bool m_CanPlayerGoal; // ゴールできる条件を満たしているか
     private int m_MaxCheckPointNum;  // チェックポイントの最大数
     private int m_OldCheckPointNumber;    // 前回のチェックポイントナンバー
+    [SerializeField]
     private int m_CheckPointScore;
     private GameObject[] m_TagObjects;
 	private bool m_isRevers;
@@ -36,12 +38,17 @@ public class CheckPointChecker : MonoBehaviour {
 	private float m_ReverseRange = 85.0f;
 	[SerializeField]
 	private float m_ReverseTime = 1.5f;
+    [Header("ゴールより前なら0、後ろなら-1を入れてください")]
+    [SerializeField]
+    private int m_FirstPlayerScore = -1;
+
+
 	// Use this for initialization
 	void Start () {
 		// チェックポイントの数を調べます。
 		m_MaxCheckPointNum = CheckTagObjectNumber("CheckPoint");
-        m_CheckPointScore = 0;
-		m_OldSocre = 0;
+        m_CheckPointScore = m_FirstPlayerScore;
+		m_OldSocre = m_FirstPlayerScore;
 		m_ReverseTimer = 0;
 		m_isReversCheck = false;
 		bGoal = false;
