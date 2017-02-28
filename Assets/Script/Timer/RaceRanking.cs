@@ -1,6 +1,13 @@
-﻿//==========================
-//つくったひと:ささきみずき
-//==========================
+﻿//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+//
+//  RaceTimer.cs
+//
+//  作成者:佐々木瑞生
+//==================================================
+//  概要
+//  ランキング管理
+//
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 using UnityEngine;
 using System.Collections;
 using System.IO;
@@ -48,6 +55,10 @@ public class RaceRanking : MonoBehaviour {
         PlayGoodSE = false;
     }
 
+    /// <summary>
+    /// ランキング更新
+    /// </summary>
+    /// <param name="NewTime">更新タイム</param>
 	public void RankingUpdate(float NewTime) {
 		if(bRankingReflect) {
 			int i;
@@ -67,7 +78,8 @@ public class RaceRanking : MonoBehaviour {
             }else {
                 PlayBadSE = true;
             }
-			FileInfo rankingFile = new FileInfo("Data/" + RankingDataFileName + ".bin");
+
+            FileInfo rankingFile = new FileInfo("Data/" + RankingDataFileName + ".bin");
 			StreamWriter streamWriter;
 			streamWriter = rankingFile.CreateText();
 			for(i = 0; i < 3; i++) {
@@ -78,16 +90,31 @@ public class RaceRanking : MonoBehaviour {
 		}
 	}
 
+    /// <summary>
+    /// ランキングデータの読み込み
+    /// ファイルがなければ生成
+    /// </summary>
 	void LoadRanking() {
-        FileInfo rankingFile = new FileInfo("Data/" + RankingDataFileName + ".bin");
-		StreamReader streamReader = new StreamReader(rankingFile.OpenRead());
-		for(int i = 0; i < 3; i++) {
-			RankingTime[i] = float.Parse(streamReader.ReadLine());
-		}
-
-		streamReader.Close();
+        string FileName = "Data/"+RankingDataFileName+".bin";
+        if(File.Exists(FileName)) {
+            FileInfo rankingFile = new FileInfo("Data/" + RankingDataFileName + ".bin");
+            StreamReader streamReader = new StreamReader(rankingFile.OpenRead());
+            for(int i = 0; i < 3; i++) {
+                RankingTime[i] = float.Parse(streamReader.ReadLine());
+            }
+            streamReader.Close();
+        }else {
+            for(int i = 0; i < 3; i++) {
+                RankingTime[i] = 5999.99f;
+            }
+            FileStream fileStream = File.Create("Data/"+RankingDataFileName+".bin");
+            fileStream.Close();
+        }
 	}
 
+    /// <summary>
+    /// ランキングの描画
+    /// </summary>
 	public void ShowRanking() {
         int i;
         m_NewRankingRectTransform.anchoredPosition = new Vector2(0, RankingPosition[0]);
@@ -102,6 +129,9 @@ public class RaceRanking : MonoBehaviour {
         RankingTargetScale[3] = RankingScale[0];
     }
 
+    /// <summary>
+    /// ランキングの位置の変更
+    /// </summary>
     public void ChangeRankingPosition() {
         int RankingCorrection = 0;
         float Scale;
