@@ -43,9 +43,9 @@ public class CoursePreviewCamera : MonoBehaviour {
     [SerializeField]
     private GameObject DeleteCanvas;
     [SerializeField]
-    private Canvas[] DoNotDeleteCanvas = new Canvas[2];
+    private Canvas[] DoNotDeleteCanvas;
     [SerializeField]
-    private Camera[] NotMainCameras = new Camera[2];
+    private Camera[] NotMainCameras;
     // Use this for initialization
     void Start() {
 		theta = 0;
@@ -71,10 +71,12 @@ public class CoursePreviewCamera : MonoBehaviour {
 		if(startProduction.isStart || startProduction.m_DoingCountDown) return;
         if(DeleteCanvas.activeSelf) {
             DeleteCanvas.SetActive(false);
-            DoNotDeleteCanvas[0].enabled = false;
-            DoNotDeleteCanvas[1].enabled = false;
-            NotMainCameras[0].enabled = false;
-            NotMainCameras[1].enabled = false;
+            for(int i = 0; i < DoNotDeleteCanvas.Length; i++) {
+                DoNotDeleteCanvas[i].enabled = false;
+            }
+            for(int i = 0; i < NotMainCameras.Length; i++) {
+                NotMainCameras[i].enabled = false;
+            }
         }
 
 		if(bFadeStart) {
@@ -112,10 +114,12 @@ public class CoursePreviewCamera : MonoBehaviour {
             SoundManager.Instance.FadeOutSE("BeforeRace", 0.3f);
             if(!DeleteCanvas.activeSelf) {
                 DeleteCanvas.SetActive(true);
-                DoNotDeleteCanvas[0].enabled = true;
-                DoNotDeleteCanvas[1].enabled = true;
-                NotMainCameras[0].enabled = true;
-                NotMainCameras[1].enabled = true;
+                for(int i = 0; i < DoNotDeleteCanvas.Length; i++) {
+                    DoNotDeleteCanvas[i].enabled = true;
+                }
+                for(int i = 0; i < NotMainCameras.Length; i++) {
+                    NotMainCameras[i].enabled = true;
+                }
             }
             theta += Time.deltaTime / m_TurningMoveTime;
 			BeziersCurvePoint(theta > 1.0f ? 1.0f : theta);
