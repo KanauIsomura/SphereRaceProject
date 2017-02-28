@@ -8,18 +8,18 @@ using System.Collections;
 /// </summary>
 public class PlayerMove : MonoBehaviour
 {
-
-    //プレイヤーの移動値
+    //移動速度用変数
     public float m_fMaxSpeed = 15.0f;       //最大速度
     public float m_fAccelSpeed = 5.0f;      //加速値
     public float m_fBrakeSpeed = 5.0f;      //減速値
-    public float m_fFriction = 3.5f;      //摩擦値
-    public float m_fCurveAngle = 15.0f;      //1回に曲がる角度
+    public float m_fFriction = 3.5f;        //摩擦値
+    public float m_fCurveAngle = 15.0f;     //1回に曲がる角度
 
-    private float m_fNowSpeed;          //現在の速度
 
-    private float m_fBoundSpeed;          //バウンド時の速度
-    private Vector3 m_vBoundVec;          //バウンド方向
+    private Vector3 m_vMoveDirection;       //進行方向
+    private float m_fNowSpeed;              //現在の速度
+    private float m_fBoundSpeed;            //バウンド時の速度
+    private Vector3 m_vBoundVec;            //バウンド方向
 
 
     //角度制限用変数
@@ -38,18 +38,28 @@ public class PlayerMove : MonoBehaviour
     private CharacterController CharaCon;
     private StartProduction StartFlg;    //スタート判定用
 
+
+
     /// <summary>
     /// スタート関数
     /// </summary>
     void Start()
     {
-        //取得
-        StartFlg = GameObject.Find("StartProduction").GetComponent<StartProduction>();
+        //スタート判定用オブジェクト取得
+        GameObject StartProduction = GameObject.Find("StartProduction");
+        
+        //データがあった場合のみ処理をする
         if (StartFlg == null)
             Debug.Log("スタート判定取得失敗");
+        else
+            StartFlg = StartProduction.GetComponent<StartProduction>();
 
+        //キャラクターコントローラー取得
         CharaCon = GetComponent<CharacterController>();
-        m_fSlopLimit = m_SlopeMin;  //初期値設定
+
+        //初期値設定
+        m_fSlopLimit = m_SlopeMin;
+        m_vMoveDirection = transform.forward;
     }
 
     /// <summary>
@@ -99,33 +109,45 @@ public class PlayerMove : MonoBehaviour
 
 
         //----  曲がる  ----//
-        Vector2 StickInput = MultiInput.Instance.GetLeftStickAxis();
+        //入力値取得
+        Vector2 StickInput = MultiInput.Instance.GetLeftStickAxis();    
+
+        //速度がある時のみ処理を行う
         if (m_fNowSpeed != 0)
         {
             Sign = 1;
             if (m_fNowSpeed < 0.0f)
                 Sign = -1;
 
-            transform.Rotate(transform.up, Sign * StickInput.x * m_fCurveAngle * Time.deltaTime);
+            m_vMoveDirection = Quaternion.AngleAxis(Sign * StickInput.x * m_fCurveAngle * Time.deltaTime, transform.up) * m_vMoveDirection;
+            //transform.Rotate(transform.up, Sign * StickInput.x * m_fCurveAngle * Time.deltaTime);
         }
 
-        /*
+        
         //----  右移動  ----//
-        if (入力判定)
+        Vector3 vSideDirection = Quaternion.Euler(0, 90, 0) * m_vMoveDirection; //進行方向を右に向けたベクトル
+        if (MultiInput.Instance.GetPressButton(MultiInput.CONTROLLER_BUTTON.RIGHT_1))
         {
+            CharaCon.Move(vSideDirection * m_fAccelSpeed * Time.deltaTime);
         }
         //----  左移動  ----//
-        if (入力判定)
+        if (MultiInput.Instance.GetPressButton(MultiInput.CONTROLLER_BUTTON.LEFT_1))
         {
+            CharaCon.Move(-vSideDirection * m_fAccelSpeed * Time.deltaTime);
         }
-        */
+        
 
         //---- 移動させる ----//
         Vector3 vMove;
 
         //移動量計算
-        vMove = transform.forward * m_fNowSpeed;
+        vMove = m_vMoveDirection * m_fNowSpeed;
         CharaCon.Move(vMove * Time.deltaTime);
+
+
+        //プレイヤーを進行方向に向ける
+        //transform.rotation = Quaternion.Slerp(transform.rotation, m_vMoveDirection, m_fCurveAngle);
+        transform.rotation = Quaternion.LookRotation(m_vMoveDirection);
 
 
         //===============================
