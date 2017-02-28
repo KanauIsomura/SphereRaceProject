@@ -49,7 +49,7 @@ public class PlayerMove : MonoBehaviour
         GameObject StartProduction = GameObject.Find("StartProduction");
         
         //データがあった場合のみ処理をする
-        if (StartFlg == null)
+        if (StartProduction == null)
             Debug.Log("スタート判定取得失敗");
         else
             StartFlg = StartProduction.GetComponent<StartProduction>();
