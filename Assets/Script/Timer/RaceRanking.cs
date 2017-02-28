@@ -16,26 +16,27 @@ using System.Collections.Generic;
 
 public class RaceRanking : MonoBehaviour {
 	[SerializeField]
-	private bool bRankingReflect = true;
-	public List<float> RankingTime = new List<float>();
-	public Image[] m_NumberImage = new Image[18];
-	public Sprite[] m_NumberSprite = new Sprite[10];
-    public bool bRaceDataSave;
+	private bool bRankingReflect = true;                                // ランキングを反映させるか否か(デバッグ用)
+	public List<float> RankingTime = new List<float>();                 // ランキングタイム(リスト)
+	public Image[] m_NumberImage = new Image[18];                       // 数字用イメージ
+	public Sprite[] m_NumberSprite = new Sprite[10];                    // 数字スプライト
+    public bool bRaceDataSave;                                          // データを更新するか否か(新規タイムが3位以内でtrue)
     [SerializeField]
-    private RectTransform[] RankingRectTransform = new RectTransform[3];
+    private RectTransform[] RankingRectTransform = new RectTransform[3];// ランキングタイムの位置
     [SerializeField]
-    private RectTransform m_NewRankingRectTransform;
-    private int NewRecordTime;
-    private int[] RankingPosition = new int[4]{ 180, 60, -50, -155 };
-    private float[] RankingScale = new float[4] {3.5f,3.2f,3.0f,2.8f };
-    private Vector2[] RankingTargetVector = new Vector2[4];
-    private float[] RankingTargetScale = new float[4];
-    private int m_NewRanking;
-    private float m_ElapsedTime = 0;
+    private RectTransform m_NewRankingRectTransform;                    // 新規タイムの位置
+    private int[] RankingPosition = new int[4]{ 180, 60, -50, -155 };   // ランキングのY座標のオフセット
+    private float[] RankingScale = new float[4] {3.5f,3.2f,3.0f,2.8f }; // ランキングのスケールのオフセット
+    private Vector2[] RankingTargetVector = new Vector2[4];             // ランキング移動後の位置格納用
+    private float[] RankingTargetScale = new float[4];                  // ランキング移動後の拡大率格納用
+    private int m_NewRanking;                                           // 新規タイムのランキング(0～3)
+    private float m_ElapsedTime = 0;                                    // 経過時間
     [SerializeField]
-    private string RankingDataFileName;
-    private bool PlayGoodSE;
-    private bool PlayBadSE;
+    private string RankingDataFileName;                                 // ランキングデータ格納用ファイルネーム
+    private bool PlayGoodSE;                                            // ランキング更新時SEネーム
+    private bool PlayBadSE;                                             // ランキング非更新時SEネーム
+
+    private const float MAX_TIME = 5999.99f;                            // タイマーの最大値
     // Use this for initialization
     void Start () {
 		LoadRanking();
@@ -96,19 +97,25 @@ public class RaceRanking : MonoBehaviour {
     /// </summary>
 	void LoadRanking() {
         string FileName = "Data/"+RankingDataFileName+".bin";
-        if(File.Exists(FileName)) {
+        if(!File.Exists(FileName)) {
+            FileStream fileStream = File.Create("Data/"+ RankingDataFileName + ".bin");
+            fileStream.Close();
+            FileInfo saveFile = new FileInfo("Data/" + RankingDataFileName + ".bin");
+            StreamWriter streamWriter;
+            streamWriter = saveFile.CreateText();
+            for(int i = 0; i < 3; i++) {
+                streamWriter.WriteLine(MAX_TIME);
+                RankingTime[i] = MAX_TIME;
+            }
+            streamWriter.Flush();
+            streamWriter.Close();
+        } else {
             FileInfo rankingFile = new FileInfo("Data/" + RankingDataFileName + ".bin");
             StreamReader streamReader = new StreamReader(rankingFile.OpenRead());
             for(int i = 0; i < 3; i++) {
                 RankingTime[i] = float.Parse(streamReader.ReadLine());
             }
             streamReader.Close();
-        }else {
-            for(int i = 0; i < 3; i++) {
-                RankingTime[i] = 5999.99f;
-            }
-            FileStream fileStream = File.Create("Data/"+RankingDataFileName+".bin");
-            fileStream.Close();
         }
 	}
 
