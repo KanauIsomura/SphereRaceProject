@@ -176,10 +176,6 @@ public class MultiInput : SingletonMonoBehaviour<MultiInput> {
         NowStick = new bool[8];
     }
 
-    // Use this for initialization
-    void Start() {
-    }
-
     // Update is called once per frame   
     void Update() {
         NowStick[0] = GetLeftStickAxis().y > 0.8f ? true : false;
@@ -192,6 +188,9 @@ public class MultiInput : SingletonMonoBehaviour<MultiInput> {
         NowStick[7] = GetRightStickAxis().x < -0.8f ? true : false;
     }
 
+    /// <summary>
+    /// トリガー系の判定用
+    /// </summary>
     void LateUpdate() {
         int i;
         // 現在フレームで入力されているかの確認(TriggerとRelease用)
@@ -205,36 +204,45 @@ public class MultiInput : SingletonMonoBehaviour<MultiInput> {
 
     /// <summary>
     /// キーボードデータの取得
+    /// 概要
+    /// ファイルからキーデータを読み込む。ファイルが存在しない場合は生成する。
     /// </summary>
     private void ReadingKeyBoardData() {
-        FileInfo keyDataFile = new FileInfo("Data/" + KeyBoardDataFileName + ".bin");
-        StreamReader streamReader = new StreamReader(keyDataFile.OpenRead());
-        // キーの割り当て
-        ButtonClossUp = streamReader.ReadLine();
-        ButtonClossDown = streamReader.ReadLine();
-        ButtonClossLeft = streamReader.ReadLine();
-        ButtonClossRight = streamReader.ReadLine();
-        ButtonCircle = streamReader.ReadLine();
-        ButtonCancel = streamReader.ReadLine();
-        ButtonTriangle = streamReader.ReadLine();
-        ButtonSquare = streamReader.ReadLine();
-        ButtonR1 = streamReader.ReadLine();
-        ButtonR2 = streamReader.ReadLine();
-        ButtonR3 = streamReader.ReadLine();
-        ButtonL1 = streamReader.ReadLine();
-        ButtonL2 = streamReader.ReadLine();
-        ButtonL3 = streamReader.ReadLine();
-        StickR_Up = streamReader.ReadLine();
-        StickR_Down = streamReader.ReadLine();
-        StickR_Left = streamReader.ReadLine();
-        StickR_Right = streamReader.ReadLine();
-        StickL_Up = streamReader.ReadLine();
-        StickL_Down = streamReader.ReadLine();
-        StickL_Left = streamReader.ReadLine();
-        StickL_Right = streamReader.ReadLine();
-        ButtonStart = streamReader.ReadLine();
-        ButtonSelect = streamReader.ReadLine();
-        streamReader.Close();
+        string FileName = "Data/"+KeyBoardDataFileName+".bin";
+        if(File.Exists(FileName)) {
+            FileInfo keyDataFile = new FileInfo("Data/" + KeyBoardDataFileName + ".bin");
+            StreamReader streamReader = new StreamReader(keyDataFile.OpenRead());
+            // キーの割り当て
+            ButtonClossUp = streamReader.ReadLine();
+            ButtonClossDown = streamReader.ReadLine();
+            ButtonClossLeft = streamReader.ReadLine();
+            ButtonClossRight = streamReader.ReadLine();
+            ButtonCircle = streamReader.ReadLine();
+            ButtonCancel = streamReader.ReadLine();
+            ButtonTriangle = streamReader.ReadLine();
+            ButtonSquare = streamReader.ReadLine();
+            ButtonR1 = streamReader.ReadLine();
+            ButtonR2 = streamReader.ReadLine();
+            ButtonR3 = streamReader.ReadLine();
+            ButtonL1 = streamReader.ReadLine();
+            ButtonL2 = streamReader.ReadLine();
+            ButtonL3 = streamReader.ReadLine();
+            StickR_Up = streamReader.ReadLine();
+            StickR_Down = streamReader.ReadLine();
+            StickR_Left = streamReader.ReadLine();
+            StickR_Right = streamReader.ReadLine();
+            StickL_Up = streamReader.ReadLine();
+            StickL_Down = streamReader.ReadLine();
+            StickL_Left = streamReader.ReadLine();
+            StickL_Right = streamReader.ReadLine();
+            ButtonStart = streamReader.ReadLine();
+            ButtonSelect = streamReader.ReadLine();
+            streamReader.Close();
+        }else {
+            FileStream fileStream = File.Create("Data/"+KeyBoardDataFileName+".bin");
+            fileStream.Close();
+            AttachKeyBoard();
+        }
     }
 
     /// <summary>
