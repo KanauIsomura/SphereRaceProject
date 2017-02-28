@@ -133,7 +133,7 @@ public class PlayerMove : MonoBehaviour
     /// </summary>
     /// <param name="Vec"></param>
     /// <param name="Speed"></param>
-    public void BoundSet(Vector3 Vec, float Speed, float fResistanceValue)
+    public void BoundSet(Vector3 Vec, float Speed, Vector3 vResistanceValue)
     {
         //変数設定
         m_fBoundSpeed = Mathf.Abs(Speed);
@@ -144,7 +144,10 @@ public class PlayerMove : MonoBehaviour
         //Debug.Log("Vertical前" + m_fVerticalSpeed);
 
         //抵抗値で速度減少
-        m_fNowSpeed = m_fNowSpeed * fResistanceValue;
+        Vector3 vMove = m_vMoveDirection * m_fNowSpeed;
+        m_fNowSpeed = (vMove.z * vResistanceValue.z) + (vMove.x * vResistanceValue.x);
+
+        //Debug.Log("Vec" + Vec);
 
         //Debug.Log("Side" + m_fSideSpeed);
         //Debug.Log("Vertical" + m_fVerticalSpeed);
