@@ -8,7 +8,6 @@ public class PlayerBound : MonoBehaviour {
 
     public float        Coefficient = 0.5f;        //バウンドの係数
     public float        MinPower = 3.0f;           //バウンドの最低威力
-    public float        SpiritPower = 5.0f;        //自分より大きい物とぶつかった時の最低威力
     PlayerMove          PlayerDirection;
     KatamariStatus      KatamariSize;              //塊のサイズ
     
@@ -43,11 +42,7 @@ public class PlayerBound : MonoBehaviour {
 
 
         //最低バウンド威力設定
-        float fminPower;
-        if (hit.gameObject.tag == "Spirit")
-            fminPower = SpiritPower;
-        else
-            fminPower = MinPower;
+        float fminPower = MinPower;
 
         //角度の計算
         float fWallAngle = 180 - (90 + Vector3.Angle(vtemp, hit.normal));
@@ -62,10 +57,7 @@ public class PlayerBound : MonoBehaviour {
 
         //バウンドの威力設定
         float BoundPower;
-        if (PlayerDirection.PlayerSpeed * Coefficient > fminPower)
-            BoundPower = PlayerDirection.PlayerSpeed * Coefficient;
-        else
-            BoundPower = fminPower;
+        BoundPower = PlayerDirection.PlayerSpeed * Coefficient;
 
 
         //抵抗値計算
@@ -78,9 +70,10 @@ public class PlayerBound : MonoBehaviour {
         vReValue.z = 1.0f - Mathf.Abs(ResistanceValue.z);
         BoundPower = vMove.x * vReValue.x + vMove.z * vReValue.z;
 
-        //Debug.Log("BoundPower" + BoundPower);
-        //Debug.Log("vReValue" + vReValue);
-        //Debug.Log("vReValue" + ResistanceValue);
+
+        //最低威力より小さかったら補正
+        if (BoundPower < fminPower)
+            BoundPower = fminPower;
 
         //バウンドさせる
         PlayerDirection.BoundSet(vFrom, BoundPower, ResistanceValue);
@@ -106,12 +99,12 @@ public class PlayerBound : MonoBehaviour {
         //方向設定
         vFrom = collision.gameObject.transform.forward;
         //バウンドの威力設定
-        float BoundPower = SpiritPower;
+        float fminPower = MinPower;
 
         Vector3 ResistanceValue;
         ResistanceValue = PlayerDirection.PlayerDirection + collision.gameObject.transform.forward;
        
         //バウンドさせる
-        PlayerDirection.BoundSet(vFrom, BoundPower, ResistanceValue);
+        PlayerDirection.BoundSet(vFrom, fminPower, ResistanceValue);
     }
 }
