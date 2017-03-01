@@ -28,7 +28,7 @@ public class PlayerMove : MonoBehaviour
     private float m_fSlopLimit;             //現在の登れる坂
 
     //Get・Set用変数
-    public float PlayerSpeed { get { return m_fNowSpeed; } }
+    public float PlayerSpeed { get { return m_fNowSpeed; } set { m_fNowSpeed = value; } }
     public float SlopeLimit { get { return m_fSlopLimit; } }
     public float BoundSpeed { get { return m_fBoundSpeed; } }
     public float PlayerMaxSpeed { get { return m_fMaxSpeed; } }
