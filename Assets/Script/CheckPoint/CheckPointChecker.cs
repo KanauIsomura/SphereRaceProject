@@ -1,5 +1,5 @@
 ﻿//====================================================
-//つくったひと:佐々木瑞生
+//制作者:佐々木瑞生
 //
 //☆チェックポイントを置くときのルール☆
 //①チェックポイントは3個以上置くこと
@@ -15,17 +15,17 @@ using UnityEngine.UI;
 using UnityEditor;
 public class CheckPointChecker : MonoBehaviour {
     public bool m_CanPlayerGoal; // ゴールできる条件を満たしているか
-    private int m_MaxCheckPointNum;  // チェックポイントの最大数
+    public int m_MaxCheckPointNum;  // チェックポイントの最大数
     private int m_OldCheckPointNumber;    // 前回のチェックポイントナンバー
     [SerializeField]
-    private int m_CheckPointScore;
+    public int m_CheckPointScore;          // 現在チェックポイントスコア
     private GameObject[] m_TagObjects;
 	private bool m_isRevers;
 	private bool m_isReversCheck;
 	private float m_ReverseTimer;
 	[SerializeField]
 	private Image ReverseImage;
-	private int m_OldSocre;
+	private int m_OldSocre;                 // 前フレームとの比較用
 	public bool bGoal;
 	private bool m_CourseRound;
 	[SerializeField]
@@ -38,10 +38,14 @@ public class CheckPointChecker : MonoBehaviour {
 	private float m_ReverseRange = 85.0f;
 	[SerializeField]
 	private float m_ReverseTime = 1.5f;
-    [Header("ゴールより前なら0、後ろなら-1を入れてください")]
+    [Header("ゴールより手前なら-1、奥なら0を入れてください")]
     [SerializeField]
     private int m_FirstPlayerScore = -1;
+    [Header("周回数")]
 
+    public int m_RequiredLapNum;    // 必要周回数
+    [System.NonSerialized]
+    public int m_NowLapNum;         // 現在周回数
 
 	// Use this for initialization
 	void Start () {
@@ -53,7 +57,8 @@ public class CheckPointChecker : MonoBehaviour {
 		m_isReversCheck = false;
 		bGoal = false;
 		m_CourseRound = false;
-		m_ObjList = new GameObject[m_TagObjects.Length];
+        m_NowLapNum = 0;
+        m_ObjList = new GameObject[m_TagObjects.Length];
 		for(int i = m_TagObjects.Length - 1; i >= 0; i--) {
 			int number = m_TagObjects[i].GetComponent<CheckPoint>().m_thisPointNumber;
 			m_ObjList[number] = m_TagObjects[i];
@@ -87,6 +92,10 @@ public class CheckPointChecker : MonoBehaviour {
 		m_OldPlayerPos = transform.position;
 	}
 
+    /// <summary>
+    /// チェックポイントに入った時の制御
+    /// </summary>
+    /// <param name="CheckPointNumber">入ったチェックポイントの番号</param>
 	public void IntoCheckPoint(int CheckPointNumber) {
 		if(CheckPointNumber == 0) {
 			m_CheckPointScore = 0;
@@ -115,19 +124,6 @@ public class CheckPointChecker : MonoBehaviour {
 		} else {
 			m_CanPlayerGoal = false;
 		}
-
-		//if(m_OldSocre < m_CheckPointScore || bGoal) {
-		//	if(m_isRevers) {
-		//		m_isRevers = false;
-		//		ReverseImage.GetComponent<Animator>().SetTrigger("Out");
-		//	}
-		//} else if(m_OldSocre > m_CheckPointScore){
-		//	if(!m_isRevers) {
-		//		m_isRevers = true;
-		//		ReverseImage.color = new Color(ReverseImage.color.r, 0.0f, ReverseImage.color.b);
-		//		ReverseImage.GetComponent<Animator>().SetTrigger("In");
-		//	}
-		//}
 
 
 		m_OldCheckPointNumber = CheckPointNumber;
