@@ -7,11 +7,11 @@ using System.Collections.Generic;
 /// </summary>
 public class DashEffect : MonoBehaviour {
    
-    public Terrain          m_StageData;     //ステージのTerrain
-    public string[]         m_TexName;       //テクスチャファイル名
-    public ParticleSystem[] m_EffectData;    //パーティクルデータ
+    public Terrain          m_StageData;             //ステージのTerrain
+    public string[]         m_TexName;               //テクスチャファイル名
+    public ParticleSystem[] m_EffectData;            //パーティクルデータ
     public float            m_Rate = 0.4f;           //表示を始める割合
-    public float            m_StartSpeed = 5.0f;    //表示を始める速度  
+    public float            m_StartSpeed = 5.0f;     //表示を始める速度  
     public float            m_GroundDistance = 3.0f; //地面までの距離       
 
 
@@ -22,7 +22,7 @@ public class DashEffect : MonoBehaviour {
     float               m_fWidthRatio;   //幅の割合
     CharacterController m_CharaCon;      //接地判定用
     PlayerMove          m_PlayerSpeed;   //速度取得用        
-    StartProduction StartFlg;    //スタート判定用
+    StartProduction     m_StartFlg;      //スタート判定用
 	
     // Use this for initialization
 	void Start () {    
@@ -41,8 +41,17 @@ public class DashEffect : MonoBehaviour {
         //キャラクターコントローラー取得
         m_CharaCon = gameObject.GetComponent<CharacterController>();
         m_PlayerSpeed = gameObject.GetComponent<PlayerMove>(); 
-        StartFlg = GameObject.Find("StartProduction").GetComponent<StartProduction>();
         
+        //スタート判定取得
+        GameObject StartProduction = GameObject.Find("StartProduction");
+        if (StartProduction == null)
+        {
+            Debug.Log("StartProductionが見つかりません。");
+            m_StartFlg = null;
+        }
+        else
+            m_StartFlg = StartProduction.GetComponent<StartProduction>();
+
 	}
 
 
@@ -53,11 +62,12 @@ public class DashEffect : MonoBehaviour {
 	void Update () {
 
         //スタート判定
-        if (StartFlg.isStart == false) return;
+        if (m_StartFlg == null || m_StartFlg.isStart == false) return;
 
 
-        //プレイヤーの速度が開始以下で空中にいたら止める(isGrounded君は死にました)
-        if (Mathf.Abs(m_PlayerSpeed.PlayerSpeed) < m_StartSpeed || Physics.Raycast(transform.position, -transform.up, m_GroundDistance + m_CharaCon.radius) == false)
+        //プレイヤーの速度が開始以下で空中にいたら止める
+        if (Mathf.Abs(m_PlayerSpeed.PlayerSpeed) < m_StartSpeed || 
+            Physics.Raycast(transform.position, -transform.up, m_GroundDistance + m_CharaCon.radius) == false)
         {
             AllStopEffect();
             return;
@@ -99,6 +109,9 @@ public class DashEffect : MonoBehaviour {
     /// <param name="Pixel"> テクスチャの仕様割合 </param>
     void SetEffect(int Count, float Pixel)
     {
+        //要素数より大きい数が来たら処理しない
+        if (m_TexData.Length <= Count) return;
+
         //テクスチャのファイル名を取得
         string TexName = m_TexData[Count].texture.name;
 
