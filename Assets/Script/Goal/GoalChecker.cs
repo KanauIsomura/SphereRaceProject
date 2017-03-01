@@ -1,5 +1,7 @@
 ﻿//================================
 /*
+ * 制作者 佐々木瑞生
+ * 
  取扱説明書
  GoalCameraにはMainCameraを
  RaceTimerにはTimeキャンバスを入れてください。
@@ -33,9 +35,9 @@ public class GoalChecker : MonoBehaviour {
     [SerializeField]
     private GameObject DeleteCanvas;
     [SerializeField]
-    private Canvas[] TimeCanvas = new Canvas[2];
+    private Canvas[] TimeCanvas;
     [SerializeField]
-    private Camera[] NotMainCameras = new Camera[2];
+    private Camera[] NotMainCameras;
     // Use this for initialization
     void Start () {
 		m_GoalImage.enabled = false;
@@ -52,8 +54,8 @@ public class GoalChecker : MonoBehaviour {
         if(m_FadeWaitTime < 0.0f && !isFade) {
             if(m_GoalImage.enabled) {
                 m_GoalImage.enabled = false;
-                TimeCanvas[0].enabled = true;
-                TimeCanvas[1].enabled = true;
+                for(int i = 0; i < TimeCanvas.Length; i++)
+                TimeCanvas[i].enabled = true;
             }
             if(m_FadeWaitTime < -ChangeRankingWaitTime) {
                 ranking.ChangeRankingPosition();
@@ -72,20 +74,29 @@ public class GoalChecker : MonoBehaviour {
 
 	void OnTriggerEnter(Collider obj) {
 		bool isPlayerTag = (obj.tag != "Player");
-		// プレイヤーで、まだゴールしてなくて、ゴール条件を満たしていたらゴールできる。
-		if( isPlayerTag || m_goalCamera.bGoal || !GameObject.Find("Player").GetComponent<CheckPointChecker>().m_CanPlayerGoal)
-			return;
-		Time.timeScale = GoalTimeScale;
-		m_goalCamera.bGoal = true;
-		m_goalCamera.bFadeStart = true;
-		m_raceTimer.PlayerGoal();
-		GameObject.Find("Player").GetComponent<CheckPointChecker>().bGoal = true;
-        if(DeleteCanvas.activeSelf || DoNotDeleteCanvas.activeSelf) {
-            DeleteCanvas.SetActive(false);
-            TimeCanvas[0].enabled = false;
-            TimeCanvas[1].enabled = false;
-            NotMainCameras[0].enabled = false;
-            NotMainCameras[1].enabled = false;
+        // プレイヤーで、まだゴールしてなくて、ゴール条件を満たしていたらゴールできる。
+        if(isPlayerTag)
+            return;
+        CheckPointChecker playerCheckPoint = GameObject.Find("Player").GetComponent<CheckPointChecker>();
+        if(playerCheckPoint.m_NowLapNum <= playerCheckPoint.m_RequiredLapNum && playerCheckPoint.m_CheckPointScore >= playerCheckPoint.m_MaxCheckPointNum-1) {
+            playerCheckPoint.m_NowLapNum++;
+            playerCheckPoint.m_CheckPointScore = -1;
+        }
+        //if(m_goalCamera.bGoal || !playerCheckPoint.m_CanPlayerGoal)
+        //return;
+        if(playerCheckPoint.m_NowLapNum >= playerCheckPoint.m_RequiredLapNum) {
+            Time.timeScale = GoalTimeScale;
+            m_goalCamera.bGoal = true;
+            m_goalCamera.bFadeStart = true;
+            m_raceTimer.PlayerGoal();
+            GameObject.Find("Player").GetComponent<CheckPointChecker>().bGoal = true;
+            if(DeleteCanvas.activeSelf || DoNotDeleteCanvas.activeSelf) {
+                DeleteCanvas.SetActive(false);
+                for(int i = 0; i < TimeCanvas.Length; i++)
+                    TimeCanvas[i].enabled = false;
+                for(int i = 0; i < NotMainCameras.Length; i++)
+                    NotMainCameras[i].enabled = false;
+            }
         }
 	}
 }
