@@ -24,9 +24,8 @@ public class PlayerBound : MonoBehaviour {
 	
 
     /// <summary>
-    /// 衝突判定  ※デバックログ禁止!!!　　←こいつ動いている時しか入らねえ
+    /// 衝突判定
     /// </summary>
-    /// <param name="hit"></param>
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
         //塊にくっ付くオブジェクトは処理を行わない
@@ -73,8 +72,18 @@ public class PlayerBound : MonoBehaviour {
         Vector3 ResistanceValue;
         ResistanceValue = PlayerDirection.PlayerDirection + hit.normal.normalized;
 
+        Vector3 vMove = vFrom * BoundPower;
+        Vector3 vReValue = Vector3.zero;
+        vReValue.x = 1.0f - Mathf.Abs(ResistanceValue.x);
+        vReValue.z = 1.0f - Mathf.Abs(ResistanceValue.z);
+        BoundPower = vMove.x * vReValue.x + vMove.z * vReValue.z;
+
+        //Debug.Log("BoundPower" + BoundPower);
+        //Debug.Log("vReValue" + vReValue);
+        //Debug.Log("vReValue" + ResistanceValue);
+
         //バウンドさせる
-        PlayerDirection.BoundSet(vFrom, BoundPower, Mathf.Abs(ResistanceValue.magnitude));
+        PlayerDirection.BoundSet(vFrom, BoundPower, ResistanceValue);
     }
 
 
@@ -103,6 +112,6 @@ public class PlayerBound : MonoBehaviour {
         ResistanceValue = PlayerDirection.PlayerDirection + collision.gameObject.transform.forward;
        
         //バウンドさせる
-        PlayerDirection.BoundSet(vFrom, BoundPower, ResistanceValue.magnitude);
+        PlayerDirection.BoundSet(vFrom, BoundPower, ResistanceValue);
     }
 }
