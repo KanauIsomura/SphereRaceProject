@@ -1,4 +1,16 @@
-﻿using UnityEngine;
+﻿//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+//
+//  RaceTimer.cs
+//
+//  作成者:佐々木瑞生
+//==================================================
+//  概要
+//  タイマー管理全般
+//
+//==================================================
+//
+//_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
@@ -9,15 +21,20 @@ public class RaceTimer : MonoBehaviour {
     private bool bStart;
     [SerializeField]
     private bool bGoal;
-	public Image[] m_NumberImage = new Image[6];
-	public Image[] m_ColonImage = new Image[2];
-	public Sprite[] m_NumberSprite = new Sprite[10];
-	public Sprite m_ColonSprite;
-	public Vector2 m_NumberSize = new Vector2(80,100);
 	public RectTransform m_TimerRectTransForm;
 	public RaceRanking ranking;
     [SerializeField]
     private string BGMName;
+    [SerializeField]
+    private Timer raceTimer;
+    [SerializeField]
+    private Timer m_TimerPrefab;           // タイマープレハブ
+	[SerializeField]
+    private Timer[] m_TimerObject;         // タイマーオブジェクト
+    private CheckPointChecker playerCheckPoint; // プレイヤー周回情報
+	private Vector3 m_LapTimerPosOffset = new Vector3(360,173,0);	// タイマーの位置のオフセット
+	private float m_TimerPosInterval = -60.0f;                       // タイマーの位置の間隔
+	static public float m_LapTime;									// ラップタイム
 	// Use this for initialization
 	void Start() {
 		Init();
@@ -29,7 +46,20 @@ public class RaceTimer : MonoBehaviour {
 	private void Init() {
 		bStart = false;
 		bGoal = false;
-	}
+        playerCheckPoint = GameObject.Find("Player").GetComponent<CheckPointChecker>();
+		m_LapTime = 0;
+		m_TimerObject = new Timer[playerCheckPoint.m_RequiredLapNum];
+        for(int i = 0; i < m_TimerObject.Length; i++) {
+			Vector3 pos = m_LapTimerPosOffset;
+			pos.y = pos.y + i * m_TimerPosInterval;
+			m_TimerObject[i] = (Timer)Instantiate(m_TimerPrefab);
+			m_TimerObject[i].transform.parent = transform;
+			m_TimerObject[i].transform.localPosition = pos;
+			m_TimerObject[i].SendTimer(0);
+			m_TimerObject[i].ChangeScale(new Vector3(1.5f, 1.5f, 1));
+			m_TimerObject[i].ChangeColor(Color.red);
+        }
+    }
 
 	// Update is called once per frame
 	void Update() {
@@ -60,18 +90,9 @@ public class RaceTimer : MonoBehaviour {
 	private void TimeCalculation() {
 		if(bStart && !bGoal) {
 			m_ElapsedTime = Time.time - m_fStartTime;
-			if(m_ElapsedTime > 5999.99f) {
-				m_ElapsedTime = 5999.99f;
-			}
-			int Minutes = (int)m_ElapsedTime / 60;
-			int Second = (int)(m_ElapsedTime - Minutes * 60);
-			int DecimalPlaces = (int)((m_ElapsedTime - (Minutes * 60 + Second)) * 100);
-			m_NumberImage[0].sprite = m_NumberSprite[Minutes / 10];
-			m_NumberImage[1].sprite = m_NumberSprite[Minutes % 10];
-			m_NumberImage[2].sprite = m_NumberSprite[Second / 10];
-			m_NumberImage[3].sprite = m_NumberSprite[Second % 10];
-			m_NumberImage[4].sprite = m_NumberSprite[DecimalPlaces / 10];
-			m_NumberImage[5].sprite = m_NumberSprite[DecimalPlaces % 10];
+            raceTimer.SendTimer(m_ElapsedTime);
+			m_LapTime += Time.deltaTime;
+			m_TimerObject[playerCheckPoint.m_NowLapNum].SendTimer(m_LapTime);
 		}
 	}
 }
