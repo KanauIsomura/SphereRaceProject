@@ -92,7 +92,9 @@ public class RaceTimer : MonoBehaviour {
 			m_ElapsedTime = Time.time - m_fStartTime;
             raceTimer.SendTimer(m_ElapsedTime);
 			m_LapTime += Time.deltaTime;
-			m_TimerObject[playerCheckPoint.m_NowLapNum].SendTimer(m_LapTime);
+			// 必要周回数が0だとバグるのでエラー処理
+			if(playerCheckPoint.m_RequiredLapNum > 1)
+				m_TimerObject[playerCheckPoint.m_NowLapNum].SendTimer(m_LapTime);
 		}
 	}
 }
