@@ -81,6 +81,7 @@ public class GoalChecker : MonoBehaviour {
         if(playerCheckPoint.m_NowLapNum <= playerCheckPoint.m_RequiredLapNum && playerCheckPoint.m_CheckPointScore >= playerCheckPoint.m_MaxCheckPointNum-1) {
             playerCheckPoint.m_NowLapNum++;
             playerCheckPoint.m_CheckPointScore = -1;
+			RaceTimer.m_LapTime = 0;
         }
         //if(m_goalCamera.bGoal || !playerCheckPoint.m_CanPlayerGoal)
         //return;
