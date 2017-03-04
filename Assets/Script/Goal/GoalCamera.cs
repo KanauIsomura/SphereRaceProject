@@ -36,8 +36,6 @@ public class GoalCamera : MonoBehaviour {
     [SerializeField]
     private string GoalBGMName;
     private bool isPlayGoalBGM;
-    [SerializeField]
-    private KatamariStatus katamariSize;
     // Use this for initialization
     void Start () {
 		theta = 0;
@@ -83,9 +81,9 @@ public class GoalCamera : MonoBehaviour {
             }
 			theta += Time.unscaledDeltaTime;
 			var thisPos = transform.position;
-			thisPos.x = watchObj.transform.position.x + DistanceAway * Mathf.Sin(theta) * katamariSize.KatamariSize;
+			thisPos.x = watchObj.transform.position.x + DistanceAway * Mathf.Sin(theta);
 			thisPos.y = watchObj.transform.position.y;
-			thisPos.z = watchObj.transform.position.z + DistanceAway * Mathf.Cos(theta) * katamariSize.KatamariSize;
+			thisPos.z = watchObj.transform.position.z + DistanceAway * Mathf.Cos(theta);
 			transform.position = thisPos;
 			transform.LookAt(watchObj.transform);   // オブジェクトのほうを見る
 		}
