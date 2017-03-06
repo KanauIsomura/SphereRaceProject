@@ -42,7 +42,6 @@ public class CheckPointChecker : MonoBehaviour {
     [SerializeField]
     private int m_FirstPlayerScore = -1;
     [Header("周回数")]
-
     public int m_RequiredLapNum;    // 必要周回数
     [System.NonSerialized]
     public int m_NowLapNum;         // 現在周回数
@@ -130,6 +129,9 @@ public class CheckPointChecker : MonoBehaviour {
 		m_OldSocre = m_CheckPointScore;
 	}
 
+	/// <summary>
+	/// 逆走チェッカー
+	/// </summary>
 	private void ReverseChecker() {
 		int TargetPointNum;
 		int CheckPointNum = m_CheckPointScore;
